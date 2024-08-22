@@ -1,4 +1,5 @@
 import { Tabs, Tooltip } from 'antd';
+import BigNumber from 'bignumber.js';
 import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 
 import { AddressFlagType, KEYRING_TYPE } from '@/shared/constant';
@@ -17,11 +18,13 @@ import { accountActions } from '@/ui/state/accounts/reducer';
 import { useAppDispatch } from '@/ui/state/hooks';
 import { useCurrentKeyring } from '@/ui/state/keyrings/hooks';
 import {
-  useBlockstreamUrl,
-  useChain,
-  useSkipVersionCallback,
-  useVersionInfo,
-  useWalletConfig
+    useBTCUnit,
+    useBlockstreamUrl,
+    useChain,
+    useChainType,
+    useSkipVersionCallback,
+    useVersionInfo,
+    useWalletConfig
 } from '@/ui/state/settings/hooks';
 import { useFetchUtxosCallback, useSafeBalance } from '@/ui/state/transactions/hooks';
 import { useAssetTabKey, useResetUiTxCreateScreen } from '@/ui/state/ui/hooks';
@@ -44,8 +47,10 @@ const $noBreakStyle: CSSProperties = {
 export default function WalletTabScreen() {
   const navigate = useNavigate();
 
-  const accountBalance = useAccountBalance();
-  const chain = useChain();
+    const accountBalance = useAccountBalance();
+    const chain = useChain();
+    const chainType = useChainType();
+
 
   const currentKeyring = useCurrentKeyring();
   const currentAccount = useCurrentAccount();
@@ -317,27 +322,127 @@ export default function WalletTabScreen() {
           />
         )}
 
-        {showDisableUnconfirmedUtxoNotice && (
-          <DisableUnconfirmedsPopover onClose={() => setShowDisableUnconfirmedUtxoNotice(false)} />
-        )}
-        {buyBtcModalVisible && (
-          <BuyBTCModal
-            onClose={() => {
-              setBuyBtcModalVisible(false);
-            }}
-          />
-        )}
-        {switchChainModalVisible && (
-          <SwitchChainModal
-            onClose={() => {
-              setSwitchChainModalVisible(false);
-            }}
-          />
-        )}
-      </Content>
-      <Footer px="zero" py="zero">
-        <NavTabBar tab="home" />
-      </Footer>
-    </Layout>
-  );
+                    <Row itemsCenter justifyCenter>
+                        <AddressBar />
+                        <Row
+                            style={{ marginLeft: 8 }}
+                            itemsCenter
+                            onClick={() => {
+                                window.open(`${blockstreamUrl}/address/${currentAccount.address}`);
+                            }}>
+                            <Text text={'View History'} size="xs" />
+                            <Icon icon="link" size={fontSizes.xs} />
+                        </Row>
+                    </Row>
+
+                    <Row justifyCenter mt="md">
+                        <Button
+                            text="Receive"
+                            preset="home"
+                            icon="receive"
+                            onClick={() => {
+                                navigate('ReceiveScreen');
+                            }}
+                        />
+
+                        <Button
+                            text="Send"
+                            preset="home"
+                            icon="send"
+                            onClick={() => {
+                                resetUiTxCreateScreen();
+                                navigate('TxCreateScreen');
+                            }}
+                        />
+
+                        {(chainType === ChainType.BITCOIN_REGTEST ||
+                            chainType === ChainType.FRACTAL_BITCOIN_TESTNET) && (
+                            <>
+                                <Button
+                                    text="Split Utxo"
+                                    preset="home"
+                                    icon="receive"
+                                    onClick={() => {
+                                        navigate('SplitUtxoScreen');
+                                    }}
+                                />
+                                <Button
+                                    text="Faucet"
+                                    preset="home"
+                                    icon="faucet"
+                                    onClick={() => {
+                                        let url = 'https://faucet.opnet.org/';
+                                        if (chainType === ChainType.FRACTAL_BITCOIN_TESTNET) {
+                                            url = 'https://fractal-faucet.opnet.org/';
+                                        }
+
+                                        window.open(url, '_blank');
+                                    }}
+                                />
+                            </>
+                        )}
+
+                        {chainType === ChainType.BITCOIN_MAINNET && (
+                            <Button
+                                text="Buy"
+                                preset="home"
+                                icon="bitcoin"
+                                onClick={() => {
+                                    setBuyBtcModalVisible(true);
+                                }}
+                            />
+                        )}
+                    </Row>
+
+                    <Tabs
+                        size={'small'}
+                        defaultActiveKey={finalAssetTabKey as unknown as string}
+                        activeKey={finalAssetTabKey as unknown as string}
+                        items={tabItems as unknown as any[]}
+                        onTabClick={(key) => {
+                            dispatch(uiActions.updateAssetTabScreen({ assetTabKey: key as unknown as AssetTabKey }));
+                        }}
+                    />
+
+                    {/*{tabItems[assetTabKey].children}*/}
+                </Column>
+                {showSafeNotice && (
+                    <NoticePopover
+                        onClose={() => {
+                            wallet.setShowSafeNotice(false);
+                            setShowSafeNotice(false);
+                        }}
+                    />
+                )}
+                {!versionInfo.skipped && (
+                    <UpgradePopover
+                        onClose={() => {
+                            skipVersion(versionInfo.newVersion);
+                        }}
+                    />
+                )}
+
+                {showDisableUnconfirmedUtxoNotice && (
+                    <DisableUnconfirmedsPopover onClose={() => setShowDisableUnconfirmedUtxoNotice(false)} />
+                )}
+                {buyBtcModalVisible && (
+                    <BuyBTCModal
+                        onClose={() => {
+                            setBuyBtcModalVisible(false);
+                        }}
+                    />
+                )}
+                {switchChainModalVisible && (
+                    <SwitchChainModal
+                        onClose={() => {
+                            setSwitchChainModalVisible(false);
+                        }}
+                    />
+                )}
+            </Content>
+            <Footer px="zero" py="zero">
+                <NavTabBar tab="home" />
+            </Footer>
+        </Layout>
+    );
 }

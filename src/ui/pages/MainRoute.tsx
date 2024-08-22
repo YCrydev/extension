@@ -33,6 +33,17 @@ import DiscoverTabScreen from './Main/DiscoverTabScreen';
 import SettingsTabScreen from './Main/SettingsTabScreen';
 import WalletTabScreen from './Main/WalletTabScreen';
 import WelcomeScreen from './Main/WelcomeScreen';
+import Airdrop from './OpNet/Airdrop';
+import DeployContract from './OpNet/DeployContract';
+import Mint from './OpNet/Mint';
+import OpNetTokenScreen from './OpNet/OpNetTokenScreen';
+import SendOpNetScreen from './OpNet/SendOpNetScreen';
+import SplitUtxoScreen from './OpNet/SplitUtxoScreen';
+import StakeWBTCoPNet from './OpNet/StakeWBTCoPNet';
+import Swap from './OpNet/SwapToken';
+import UnStakeWBTCoPNet from './OpNet/UnStakeWBTCoPNet';
+import UnWrapBitcoinOpnet from './OpNet/UnWrapBitcoinOpnet';
+import WrapBitcoinOpnet from './OpNet/WrapBitcoinOpnet';
 import OrdinalsInscriptionScreen from './Ordinals/OrdinalsInscriptionScreen';
 import SendOrdinalsInscriptionScreen from './Ordinals/SendOrdinalsInscriptionScreen';
 import SignOrdinalsTransactionScreen from './Ordinals/SignOrdinalsTransactionScreen';
@@ -244,14 +255,58 @@ const routes = {
     element: <UnavailableUtxoScreen />
   },
 
-  SendRunesScreen: {
-    path: '/runes/send-runes',
-    element: <SendRunesScreen />
-  },
-  RunesTokenScreen: {
-    path: '/runes/token',
-    element: <RunesTokenScreen />
-  }
+    SendRunesScreen: {
+        path: '/runes/send-runes',
+        element: <SendRunesScreen />
+    },
+    RunesTokenScreen: {
+        path: '/runes/token',
+        element: <RunesTokenScreen />
+    },
+    OpNetTokenScreen: {
+        path: '/opnet/token',
+        element: <OpNetTokenScreen />
+    },
+    SendOpNetScreen: {
+        path: '/opnet/send-opnet',
+        element: <SendOpNetScreen />
+    },
+    WrapBitcoinOpnet: {
+        path: '/opnet/wrap-opnet',
+        element: <WrapBitcoinOpnet />
+    },
+    UnWrapBitcoinOpnet: {
+        path: '/opnet/unwrap-opnet',
+        element: <UnWrapBitcoinOpnet />
+    },
+    StakeWBTCoPNet: {
+        path: '/opnet/stake-wbtc',
+        element: <StakeWBTCoPNet />
+    },
+    UnStakeWBTCoPNet: {
+        path: '/opnet/unstake-wbtc',
+        element: <UnStakeWBTCoPNet />
+    },
+    Swap: {
+        path: '/opnet/swap',
+        element: <Swap />
+    },
+    DeployContract: {
+        path: '/opnet/deploy-contract',
+        element: <DeployContract />
+    },
+    Mint: {
+        path: '/opnet/mint',
+        element: <Mint />
+    },
+    Airdrop: {
+        path: '/opnet/airdrop',
+        element: <Airdrop />
+    },
+    SplitUtxoScreen: {
+        path: '/opnet/split-utxo',
+        element: <SplitUtxoScreen />
+    }
 };
 
 type RouteTypes = keyof typeof routes;
